@@ -1,92 +1,47 @@
 use('sample_airbnb');
-
-
 fieldsArray = [];
 
-
-
 docKeysArray = db.customers.aggregate([
-
   {$project: {data: {$objectToArray: "$$ROOT"}}},
-
   {$addFields: {
-
       fields: "$data.k",
-
       data: {
-
         $map: {
-
           input: {$filter: {
-
               input: "$data",
-
-              cond: {$eq: ["object",{$type: "$$this.v"}]}
-
+              cond: {$eq: ["object",{$type: "$$this.v"}]}
           }},
-
           in: {
-
             v: {
-
               $map: {
-
                 input: {$objectToArray: "$$this.v"},
-
                 as: "sub",
-
                 in: {
-
                   k: {$concat: ["$$this.k",".","$$sub.k"]},
-
                   v: "$$sub.v"
-
                 }
-
               }
-
             }
-
           }
-
         }
-
       }
-
   }},
-
   {$addFields: {
-
       data: {$reduce: {
-
           input: "$data",
-
           initialValue: [],
-
           in: {$concatArrays: ["$$value", "$$this.v"]}
-
       }}
-
   }},
-
   {$addFields: {
-
       fields: {$concatArrays: ["$fields","$data.k"]},
-
       data: {
-
         $map: {
-
           input: {$filter: {
-
               input: "$data",
-
               cond: {$eq: ["object",{$type: "$$this.v"}]}
-
           }},
-
           in: {
-
             v: {
 
               $map: {
